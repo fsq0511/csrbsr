@@ -4,3 +4,17 @@ shinywidgets
 plotly
 pandas
 ridgeplot
+ipyleaflet
+os
+re
+webbrowser
+math
+streamstats
+numpy
+pandas
+geopandas
+rasterio
+matplotlib
+pathlib
+seaborn
+pyproj
