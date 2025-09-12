@@ -1,0 +1,73 @@
+# ---- server ----
+def server(input, output, session):
+    def current_lonlat():
+        # Convert EPSG:6543 (ftUS) -> EPSG:4326 (lon,lat)
+        lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
+        return lon, lat
+
+    @output
+    @render.ui
+    def latlon_out():
+        lon, lat = current_lonlat()
+        return ui.layout_columns(
+            ui.card(ui.card_header("Longitude (°)"), ui.p(f"{lon:.6f}")),
+            ui.card(ui.card_header("Latitude (°)"), ui.p(f"{lat:.6f}")),
+            col_widths=(6, 6),
+        )
+
+    @output
+    @render.ui
+    def google_link():
+        lon, lat = current_lonlat()
+        # Pinned point in Google Maps (lat,lon order)
+        url = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
+        return ui.a("🌍 Open Bridge/Culvert location in Google Maps",
+                    href=url, target="_blank", class_="gmaps-link")
+
+    @output
+    @render.text
+    def out_county():
+        lon, lat = current_lonlat()
+        info = describe_point_admin_and_stream(
+            lon, lat, layers.get("counties"), layers.get("streams")
+        )
+        return info.get("county_name") or "—"
+
+    @output
+    @render.text
+    def out_fips():
+        lon, lat = current_lonlat()
+        info = describe_point_admin_and_stream(
+            lon, lat, layers.get("counties"), layers.get("streams")
+        )
+        v = info.get("county_code")
+        return str(v) if v is not None else "—"
+
+    @output
+    @render.text
+    def out_stream():
+        lon, lat = current_lonlat()
+        info = describe_point_admin_and_stream(
+            lon, lat, layers.get("counties"), layers.get("streams")
+        )
+        return info.get("stream_name") or "—"
+
+    @output
+    @render.text
+    def out_stream_dist():
+        lon, lat = current_lonlat()
+        info = describe_point_admin_and_stream(
+            lon, lat, layers.get("counties"), layers.get("streams")
+        )
+        d = info.get("stream_distance_m")
+        return f"{d:.1f}" if d is not None else "—"
+
+    @render_widget
+    def map():
+        lon, lat = current_lonlat()
+        m = ipyl.Map(center=(lat, lon), zoom=18, scroll_wheel_zoom=True)
+        # Higher-zoom street tiles
+        m.add_layer(ipyl.basemap_to_tiles(ipyl.basemaps.Esri.WorldStreetMap, max_zoom=22))
+        m.add_layer(ipyl.Marker(location=(lat, lon)))
+        m.add_control(ipyl.LayersControl(position="topright"))
+        return m
