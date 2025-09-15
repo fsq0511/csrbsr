@@ -11,5 +11,5 @@ streamstats
 geopandas
 matplotlib
 pyproj
-math
+python-math
 ezdxf
