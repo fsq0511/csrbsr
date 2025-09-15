@@ -14,9 +14,9 @@ import streamstats
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-import rasterio
-from rasterio.merge import merge
-from rasterio.plot import show
+# import rasterio
+# from rasterio.merge import merge
+# from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns  # optional; remove if not needed
@@ -320,5 +320,6 @@ def describe_point_admin_and_stream(
         "stream_name": stream_name,
         "stream_distance_m": stream_distance_m,
     }
+
 
 
