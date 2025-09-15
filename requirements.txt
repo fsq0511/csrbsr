@@ -10,3 +10,6 @@ faicons
 streamstats
 geopandas
 matplotlib
+pyproj
+math
+ezdxf
