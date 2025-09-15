@@ -10,7 +10,6 @@ faicons
 plotly
 pandas
 ridgeplot
-ipyleaflet
 os
 re
 webbrowser
