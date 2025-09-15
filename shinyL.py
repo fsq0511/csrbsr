@@ -19,7 +19,7 @@ import geopandas as gpd
 # from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib import colors
-import seaborn as sns  # optional; remove if not needed
+# import seaborn as sns  # optional; remove if not needed
 from pathlib import Path
 
 import pyproj
@@ -320,6 +320,7 @@ def describe_point_admin_and_stream(
         "stream_name": stream_name,
         "stream_distance_m": stream_distance_m,
     }
+
 
 
 
