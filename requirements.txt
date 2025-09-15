@@ -8,3 +8,4 @@ scipy
 pandas
 faicons
 streamstats
+geopandas
