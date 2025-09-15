@@ -256,7 +256,7 @@ Placeholder44 = "Elevation"  # (ft)
 
 # shinyL.py (append this)
 import geopandas as gpd
-nc_counties = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\ncgs_state_county_boundary\NC_State_County_Boundary1.shp").to_crs(epsg=4326)
+nc_counties = gpd.read_file(r"https://hdrinc-my.sharepoint.com/:u:/p/sfang/EflLf-T2od1FpPmOIQGLn6sBe19hHVAhlvtECc3SUVqZyA?email=fsq0511%40gmail.com&e=kPWtVQ").to_crs(epsg=4326)
 nc_streams = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\North_Carolina_Stream_Centerlines_Effective\North_Carolina_Stream_Centerlines_Effective.shp").to_crs(epsg=4326)
 nc_bridges = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Bridge_Structures\Bridge_Structures.shp").to_crs(epsg=4326)
 SurfaceWaterClassifications_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp").to_crs(epsg=4326)
@@ -320,6 +320,7 @@ def describe_point_admin_and_stream(
         "stream_name": stream_name,
         "stream_distance_m": stream_distance_m,
     }
+
 
 
 
