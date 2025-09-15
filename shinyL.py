@@ -30,13 +30,13 @@ from pyproj import datadir, CRS
 import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
 from pyproj import Transformer
 import os
-os.environ["GDAL_DATA"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\gdal"
-os.environ["PROJ_LIB"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj"
+# os.environ["GDAL_DATA"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\gdal"
+# os.environ["PROJ_LIB"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj"
 
 from pyproj import datadir
-datadir.set_data_dir(rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj")
+# datadir.set_data_dir(rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj")
 
-datadir.set_data_dir(r"C:\Users\sfang\AppData\Local\anaconda3\envs\usgs_env\Library\share\proj")
+# datadir.set_data_dir(r"C:\Users\sfang\AppData\Local\anaconda3\envs\usgs_env\Library\share\proj")
 _to_wgs84 = Transformer.from_crs(6543, 4326, always_xy=True)  # x,y -> lon,lat
 _from_wgs84 = Transformer.from_crs(4326, 6543, always_xy=True) # lon,lat -> x,y (ftUS)
 
@@ -320,6 +320,7 @@ def describe_point_admin_and_stream(
         "stream_name": stream_name,
         "stream_distance_m": stream_distance_m,
     }
+
 
 
 
