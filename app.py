@@ -12,7 +12,7 @@ from shinyL import (
     ensure_text_style, as_text, upper_or,qfmt, build_and_save_dxf,safe_filename,
 )
 
-DXF_OUT_DIR = r"C:\Users\sfang\Documents\US19W"  # change if you prefer
+# DXF_OUT_DIR = r"C:\Users\sfang\Documents\US19W"  # change if you prefer
 
 #ctrl+shift+p to open command palette in VS code
 # ---------- UI ----------
@@ -149,6 +149,7 @@ def server(input, output, session):
 
 
 app = App(app_ui, server)
+
 
 
 
