@@ -12,9 +12,6 @@ from shinyL import (
     ensure_text_style, as_text, upper_or,qfmt, build_and_save_dxf,safe_filename,
 )
 
-# DXF_OUT_DIR = r"C:\Users\sfang\Documents\US19W"  # change if you prefer
-
-#ctrl+shift+p to open command palette in VS code
 # ---------- UI ----------
 app_ui = ui.page_fluid(
     ui.h4("Required Bridge/Culvert Locations", style="color:#cc0000;"),
@@ -52,17 +49,9 @@ app_ui = ui.page_fluid(
     ),
     ui.h4("Flood Survey data ", style="color:#cc0000;"),
 
-    # ui.output_ui("basin_character"),
-    # ui.output_ui("watershed_map"),   # 👈 plot output
     ui.output_ui("google_link"),
 
-    ui.h3("Nearest Stream Classification"),
-    ui.layout_column_wrap(
-        ui.input_text("Roadname1", "Road Name #1 in CSR", "SR-1385 (Piney Hill Rd) "),
-        ui.input_text("Roadname2", "Road Name #2 in CSR", "US-19 West"),
-    ),
-    # ui.hr(),
-    # # ui.output_text("stream_class"),
+
     output_widget("map"),
 )
 
@@ -99,27 +88,6 @@ def server(input, output, session):
             class_="gmaps-link",
         )
     
-    # @render.ui
-    # def basin_character():
-    #     lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-    #     info = describe_point_admin_and_stream(
-    #         lon, lat)
-    #     info = describe_point_admin_and_stream(lon, lat)
-
-    #     county_name = info.get("county_name") or "N/A"
-    #     county_code = info.get("county_code") or "N/A"
-    #     stream_name = info.get("stream_name") or "N/A"
-    #     dist_m = info.get("stream_distance_m")
-    #     stream_class_distance_m = info.get("stream_class_distance_m") or "N/A"
-    #     stream_class = info.get("stream_class") or "N/A"
-    #     dist_txt = f"{dist_m:.1f} m" if dist_m is not None else "N/A"
-    #     return ui.div(
-    #         ui.p(ui.strong("County: "), f"{county_name}"),
-    #         ui.p(ui.strong("FIPS: "), f"{county_code}"),
-    #         ui.p(ui.strong("Nearest stream: "), f"{stream_name}"),
-    #         ui.p(ui.strong("Distance to stream: "), f"{dist_m:.1f}"),
-    #         ui.p(ui.strong("Stream classification: "), f"{stream_class}"),
-    #     )
 
     @render_widget
     def map():
@@ -127,28 +95,12 @@ def server(input, output, session):
         m = ipyl.Map(center=(lat, lon), zoom=18)  # ipyleaflet expects (lat, lon)
         m.add_layer(ipyl.Marker(location=(lat, lon)))
         return m
-    
-    # @render.ui
-    # def watershed_map():
-    #     # Get watershed polygon from StreamStats
-    #     lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-    #     ws = streamstats.Watershed(lat=lat, lon=lon)
-    #     ss_parameters = pd.DataFrame(ws.parameters)
-    #     # ss_parameters.iloc[43:48,]#.values
-    #     basin_character = ss_parameters.iloc[43:48,][ss_parameters.iloc[43:48,]['value']>1]['name'].values[0]
-    #     # ss_parameters
-    #     area_sq_mi = ss_parameters.iloc[3,:]['value']
-    #     area_acres = area_sq_mi * 640 # convert to acres
-    #     new_basin_character = make_basin_character(basin_character)      
-
-    #     return new_basin_character
-    
-
 
 
 
 
 app = App(app_ui, server)
+
 
 
 
