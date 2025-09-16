@@ -444,24 +444,24 @@ Placeholder44 = "Elevation"  # (ft)
 
 # shinyL.py (append this)
 import geopandas as gpd
-# nc_counties = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\ncgs_state_county_boundary\NC_State_County_Boundary1.shp").to_crs(epsg=4326)
-nc_counties = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_CountyBdy_Poly/MapServer/0')
-# nc_streams = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\North_Carolina_Stream_Centerlines_Effective\North_Carolina_Stream_Centerlines_Effective.shp").to_crs(epsg=4326)
-# nc_streams = arcgis_read_layer_url('https://spartagis.ncem.org/arcgis/rest/services/Public/FRIS_FloodZones/MapServer/0')
-nc_streams = arcgis_read_layer_url('https://services2.arcgis.com/kCu40SDxsCGcuUWO/arcgis/rest/services/SurfaceWaterClassifications/FeatureServer/0')
-# nc_bridges = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Bridge_Structures\Bridge_Structures.shp").to_crs(epsg=4326)
-# SurfaceWaterClassifications_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp").to_crs(epsg=4326)
-# nc_roads = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\State_Maintained_Roads\State_Maintained_Roads_prj.shp").to_crs(epsg=4326)
-# nc_culverts = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Culverts\Culverts.shp").to_crs(epsg=4326)
-huc12_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\hydrologic_units\wbdhu12_a_nc.shp").to_crs(epsg=4326)
-# SurfaceWaterClassifications_data = gpd.read_file(r'C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp')
-# SurfaceWaterClassifications_data = SurfaceWaterClassifications_data.to_crs(epsg=4326) 
-nc_bridges = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/0')
-nc_pipes = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/1')
-nc_culverts = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/2')
-svc = "https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer"
-layers = arcgis_list_layers(svc)
-nc_roads = arcgis_read_layer(svc, layer_id=0)
+# # nc_counties = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\ncgs_state_county_boundary\NC_State_County_Boundary1.shp").to_crs(epsg=4326)
+# nc_counties = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_CountyBdy_Poly/MapServer/0')
+# # nc_streams = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\North_Carolina_Stream_Centerlines_Effective\North_Carolina_Stream_Centerlines_Effective.shp").to_crs(epsg=4326)
+# # nc_streams = arcgis_read_layer_url('https://spartagis.ncem.org/arcgis/rest/services/Public/FRIS_FloodZones/MapServer/0')
+# nc_streams = arcgis_read_layer_url('https://services2.arcgis.com/kCu40SDxsCGcuUWO/arcgis/rest/services/SurfaceWaterClassifications/FeatureServer/0')
+# # nc_bridges = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Bridge_Structures\Bridge_Structures.shp").to_crs(epsg=4326)
+# # SurfaceWaterClassifications_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp").to_crs(epsg=4326)
+# # nc_roads = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\State_Maintained_Roads\State_Maintained_Roads_prj.shp").to_crs(epsg=4326)
+# # nc_culverts = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Culverts\Culverts.shp").to_crs(epsg=4326)
+# huc12_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\hydrologic_units\wbdhu12_a_nc.shp").to_crs(epsg=4326)
+# # SurfaceWaterClassifications_data = gpd.read_file(r'C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp')
+# # SurfaceWaterClassifications_data = SurfaceWaterClassifications_data.to_crs(epsg=4326) 
+# nc_bridges = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/0')
+# nc_pipes = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/1')
+# nc_culverts = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/2')
+# svc = "https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer"
+# layers = arcgis_list_layers(svc)
+# nc_roads = arcgis_read_layer(svc, layer_id=0)
 
 
 # https://ncdot.maps.arcgis.com/
@@ -637,6 +637,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
