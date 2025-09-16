@@ -298,8 +298,6 @@ def open_google_maps(latitude: float, longitude: float) -> None:
     """
     url = f"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}"
     webbrowser.open(url)
-# Default data root; change if needed
-NC_DATA_DIR = Path(r"C:\Users\sfang\Documents\NCdata")
 
 def _read_gdf(path: Path, to_epsg: int = 4326):
     """Read a shapefile to GeoDataFrame, reproject to EPSG, warn if missing."""
@@ -628,6 +626,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
