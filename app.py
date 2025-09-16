@@ -61,7 +61,6 @@ app_ui = ui.page_fluid(
         ui.input_text("Roadname1", "Road Name #1 in CSR", "SR-1385 (Piney Hill Rd) "),
         ui.input_text("Roadname2", "Road Name #2 in CSR", "US-19 West"),
     ),
-    ui.download_button("download_dxf", "Download DXF"),
     ui.hr(),
     # ui.output_text("stream_class"),
     output_widget("map"),
@@ -145,70 +144,9 @@ def server(input, output, session):
         return new_basin_character
     
 
-    @render.download(
-    filename="csrtex.dxf",
-    media_type="application/dxf",
-    )
-    
-    def download_dxf():
-        # (Reuse your lon/lat + describe_point_admin_and_stream as before)
-        lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-        try:
-            res = describe_point_admin_and_stream(
-                lon, lat,
-                nc_counties=nc_counties,
-                nc_streams=nc_streams,
-                surface_water_gdf=SurfaceWaterClassifications_data,
-                # water_class_field="BIMS_Class",
-            )
-        except Exception:
-            res = {}
 
-        ctx = {
-            "DA": input.DA(),
-            "bridge_stationtxt": input.bridge_station(),
-            "Countyname": res.get("county_name"),
-            "basinnames": input.basinchar(),
-            "Bridgenum": input.bridgenum(),
-            "route_name": "",
-            "roadname1": input.roadname1(),
-            "roadname2": input.roadname2(),
-            "lat_overall": lat,
-            "lon_overall": lon,
-            "yy": "", "xx": "", "zz": "",
-            "Designername": input.designer(),
-            "AsstDesignername": input.asst(),
-            "Designdate": input.date(),
-            "area_sq_mi": input.areasqmi(),
-            "area_acres": input.areaac(),
-            "Stream": res.get("stream_name"),
-            "new_basin_character": input.basinchar(),
-            "StreamClassification": res.get("stream_class"),
-            "Placeholder1": "",
-            "Placeholder2": "",
-            "Placeholder9": "",
-            "Placeholder10": "",
-            "Placeholder11": "",
-        }
-
-        fname_on_disk = f"{safe_filename(input.bridge_station())}_csrtex.dxf"
-        try:
-            out_path = build_and_save_dxf(ctx, DXF_OUT_DIR, fname_on_disk)  # uses doc.saveas()
-            if not (out_path and os.path.isfile(out_path) and os.path.getsize(out_path) > 0):
-                raise RuntimeError(f"DXF not found or empty: {out_path}")
-
-            # Stream the saved file to the browser
-            with open(out_path, "rb") as f:
-                while True:
-                    chunk = f.read(1024 * 1024)
-                    if not chunk:
-                        break
-                    yield chunk
-        except Exception as e:
-            print("DXF download error:", e)
-            print(traceback.format_exc())
-            raise
 
 
 
 app = App(app_ui, server)
+
