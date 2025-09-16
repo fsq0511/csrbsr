@@ -435,7 +435,6 @@ Placeholder43 = "Date"
 Placeholder44 = "Elevation"  # (ft)
 
 # shinyL.py (append this)
-import geopandas as gpd
 # # nc_counties = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\ncgs_state_county_boundary\NC_State_County_Boundary1.shp").to_crs(epsg=4326)
 # nc_counties = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_CountyBdy_Poly/MapServer/0')
 # # nc_streams = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\North_Carolina_Stream_Centerlines_Effective\North_Carolina_Stream_Centerlines_Effective.shp").to_crs(epsg=4326)
@@ -629,6 +628,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
