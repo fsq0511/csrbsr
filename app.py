@@ -52,7 +52,7 @@ app_ui = ui.page_fluid(
     ),
     ui.h4("Flood Survey data ", style="color:#cc0000;"),
 
-    ui.output_ui("basin_character"),
+    # ui.output_ui("basin_character"),
     ui.output_ui("watershed_map"),   # 👈 plot output
     ui.output_ui("google_link"),
 
@@ -99,27 +99,27 @@ def server(input, output, session):
             class_="gmaps-link",
         )
     
-    @render.ui
-    def basin_character():
-        lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-        info = describe_point_admin_and_stream(
-            lon, lat)
-        info = describe_point_admin_and_stream(lon, lat)
+    # @render.ui
+    # def basin_character():
+    #     lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
+    #     info = describe_point_admin_and_stream(
+    #         lon, lat)
+    #     info = describe_point_admin_and_stream(lon, lat)
 
-        county_name = info.get("county_name") or "N/A"
-        county_code = info.get("county_code") or "N/A"
-        stream_name = info.get("stream_name") or "N/A"
-        dist_m = info.get("stream_distance_m")
-        stream_class_distance_m = info.get("stream_class_distance_m") or "N/A"
-        stream_class = info.get("stream_class") or "N/A"
-        dist_txt = f"{dist_m:.1f} m" if dist_m is not None else "N/A"
-        return ui.div(
-            ui.p(ui.strong("County: "), f"{county_name}"),
-            ui.p(ui.strong("FIPS: "), f"{county_code}"),
-            ui.p(ui.strong("Nearest stream: "), f"{stream_name}"),
-            ui.p(ui.strong("Distance to stream: "), f"{dist_m:.1f}"),
-            ui.p(ui.strong("Stream classification: "), f"{stream_class}"),
-        )
+    #     county_name = info.get("county_name") or "N/A"
+    #     county_code = info.get("county_code") or "N/A"
+    #     stream_name = info.get("stream_name") or "N/A"
+    #     dist_m = info.get("stream_distance_m")
+    #     stream_class_distance_m = info.get("stream_class_distance_m") or "N/A"
+    #     stream_class = info.get("stream_class") or "N/A"
+    #     dist_txt = f"{dist_m:.1f} m" if dist_m is not None else "N/A"
+    #     return ui.div(
+    #         ui.p(ui.strong("County: "), f"{county_name}"),
+    #         ui.p(ui.strong("FIPS: "), f"{county_code}"),
+    #         ui.p(ui.strong("Nearest stream: "), f"{stream_name}"),
+    #         ui.p(ui.strong("Distance to stream: "), f"{dist_m:.1f}"),
+    #         ui.p(ui.strong("Stream classification: "), f"{stream_class}"),
+    #     )
 
     @render_widget
     def map():
@@ -149,4 +149,5 @@ def server(input, output, session):
 
 
 app = App(app_ui, server)
+
 
