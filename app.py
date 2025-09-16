@@ -61,8 +61,8 @@ app_ui = ui.page_fluid(
         ui.input_text("Roadname1", "Road Name #1 in CSR", "SR-1385 (Piney Hill Rd) "),
         ui.input_text("Roadname2", "Road Name #2 in CSR", "US-19 West"),
     ),
-    ui.hr(),
-    # ui.output_text("stream_class"),
+    # ui.hr(),
+    # # ui.output_text("stream_class"),
     output_widget("map"),
 )
 
@@ -149,5 +149,6 @@ def server(input, output, session):
 
 
 app = App(app_ui, server)
+
 
 
