@@ -70,4 +70,5 @@ def server(input, output, session):
         m.add_layer(ipyl.basemap_to_tiles(ipyl.basemaps.Esri.WorldStreetMap, max_zoom=22))
         m.add_layer(ipyl.Marker(location=(lat, lon)))
         m.add_control(ipyl.LayersControl(position="topright"))
+
         return m
