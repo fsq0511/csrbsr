@@ -14,12 +14,12 @@ import streamstats
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-import rasterio
-from rasterio.merge import merge
-from rasterio.plot import show
+# import rasterio
+# from rasterio.merge import merge
+# from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib import colors
-import seaborn as sns  # optional; remove if not needed
+# import seaborn as sns  # optional; remove if not needed
 from pathlib import Path
 import certifi
 import requests
@@ -637,6 +637,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
