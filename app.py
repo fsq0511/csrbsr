@@ -53,7 +53,7 @@ app_ui = ui.page_fluid(
     ui.h4("Flood Survey data ", style="color:#cc0000;"),
 
     # ui.output_ui("basin_character"),
-    ui.output_ui("watershed_map"),   # 👈 plot output
+    # ui.output_ui("watershed_map"),   # 👈 plot output
     ui.output_ui("google_link"),
 
     ui.h3("Nearest Stream Classification"),
@@ -128,20 +128,20 @@ def server(input, output, session):
         m.add_layer(ipyl.Marker(location=(lat, lon)))
         return m
     
-    @render.ui
-    def watershed_map():
-        # Get watershed polygon from StreamStats
-        lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-        ws = streamstats.Watershed(lat=lat, lon=lon)
-        ss_parameters = pd.DataFrame(ws.parameters)
-        # ss_parameters.iloc[43:48,]#.values
-        basin_character = ss_parameters.iloc[43:48,][ss_parameters.iloc[43:48,]['value']>1]['name'].values[0]
-        # ss_parameters
-        area_sq_mi = ss_parameters.iloc[3,:]['value']
-        area_acres = area_sq_mi * 640 # convert to acres
-        new_basin_character = make_basin_character(basin_character)      
+    # @render.ui
+    # def watershed_map():
+    #     # Get watershed polygon from StreamStats
+    #     lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
+    #     ws = streamstats.Watershed(lat=lat, lon=lon)
+    #     ss_parameters = pd.DataFrame(ws.parameters)
+    #     # ss_parameters.iloc[43:48,]#.values
+    #     basin_character = ss_parameters.iloc[43:48,][ss_parameters.iloc[43:48,]['value']>1]['name'].values[0]
+    #     # ss_parameters
+    #     area_sq_mi = ss_parameters.iloc[3,:]['value']
+    #     area_acres = area_sq_mi * 640 # convert to acres
+    #     new_basin_character = make_basin_character(basin_character)      
 
-        return new_basin_character
+    #     return new_basin_character
     
 
 
@@ -149,6 +149,7 @@ def server(input, output, session):
 
 
 app = App(app_ui, server)
+
 
 
 
