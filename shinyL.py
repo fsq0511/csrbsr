@@ -470,7 +470,7 @@ def describe_point_admin_and_stream(
     lat: float,
     nc_counties=nc_counties,
     nc_streams= nc_streams,
-    SurfaceWaterClassifications_data = SurfaceWaterClassifications_data,
+    # SurfaceWaterClassifications_data = SurfaceWaterClassifications_data,
     county_name_field: str = "CountyName",
     county_code_field: str = "FIPS",
     stream_name_candidates: tuple[str, ...] = ("BIMS_Name", "NAME", "GNIS_NAME"),
@@ -637,6 +637,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
