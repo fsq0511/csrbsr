@@ -38,14 +38,14 @@ from pyproj import Transformer
 import os
 # CONDA_PREFIX = os.environ.get("CONDA_PREFIX", r"C:\Users\sfang\AppData\Local\anaconda3\envs\shiny_env")
 
-os.environ["GDAL_DATA"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\gdal"
-os.environ["PROJ_LIB"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj"
+# os.environ["GDAL_DATA"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\gdal"
+# os.environ["PROJ_LIB"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj"
 # os.environ["SSL_CERT_FILE"] = certifi.where()
 
 from pyproj import datadir
-datadir.set_data_dir(rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj")
+# datadir.set_data_dir(rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj")
 
-datadir.set_data_dir(r"C:\Users\sfang\AppData\Local\anaconda3\usgs_env\Library\share\proj")
+# datadir.set_data_dir(r"C:\Users\sfang\AppData\Local\anaconda3\usgs_env\Library\share\proj")
 _to_wgs84 = Transformer.from_crs(6543, 4326, always_xy=True)  # x,y -> lon,lat
 _from_wgs84 = Transformer.from_crs(4326, 6543, always_xy=True) # lon,lat -> x,y (ftUS)
 
@@ -637,6 +637,7 @@ def safe_filename(name: str, default="drawing"):
     s = (name or default).strip()
     s = re.sub(r'[\\/:*?"<>|]+', "_", s)
     return s or default
+
 
 
 
