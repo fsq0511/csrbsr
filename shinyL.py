@@ -14,12 +14,9 @@ import streamstats
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-import rasterio
-from rasterio.merge import merge
-from rasterio.plot import show
+
 import matplotlib.pyplot as plt
 from matplotlib import colors
-import seaborn as sns  # optional; remove if not needed
 from pathlib import Path
 import certifi
 import requests
@@ -36,26 +33,26 @@ from typing import List, Dict, Optional
 import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
 from pyproj import Transformer
 import os
+from pyproj import datadir
 # CONDA_PREFIX = os.environ.get("CONDA_PREFIX", r"C:\Users\sfang\AppData\Local\anaconda3\envs\shiny_env")
 
 # os.environ["GDAL_DATA"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\gdal"
 # os.environ["PROJ_LIB"] = rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj"
 # os.environ["SSL_CERT_FILE"] = certifi.where()
 
-from pyproj import datadir
 # datadir.set_data_dir(rf"{os.environ.get('CONDA_PREFIX')}\Library\share\proj")
 
 # datadir.set_data_dir(r"C:\Users\sfang\AppData\Local\anaconda3\usgs_env\Library\share\proj")
-# _to_wgs84 = Transformer.from_crs(6543, 4326, always_xy=True)  # x,y -> lon,lat
-# _from_wgs84 = Transformer.from_crs(4326, 6543, always_xy=True) # lon,lat -> x,y (ftUS)
+_to_wgs84 = Transformer.from_crs(6543, 4326, always_xy=True)  # x,y -> lon,lat
+_from_wgs84 = Transformer.from_crs(4326, 6543, always_xy=True) # lon,lat -> x,y (ftUS)
 
-# def ncft_to_wgs84(easting_ft: float, northing_ft: float):
-#     """EPSG:6543 (ftUS) -> EPSG:4326 (lon, lat)."""
-#     return _to_wgs84.transform(easting_ft, northing_ft)
+def ncft_to_wgs84(easting_ft: float, northing_ft: float):
+    """EPSG:6543 (ftUS) -> EPSG:4326 (lon, lat)."""
+    return _to_wgs84.transform(easting_ft, northing_ft)
 
-# def wgs84_to_ncft(lon: float, lat: float):
-#     """EPSG:4326 (lon, lat) -> EPSG:6543 (ftUS)."""
-#     return _from_wgs84.transform(lon, lat)
+def wgs84_to_ncft(lon: float, lat: float):
+    """EPSG:4326 (lon, lat) -> EPSG:6543 (ftUS)."""
+    return _from_wgs84.transform(lon, lat)
 def arcgis_list_layers(service_url: str) -> list[dict]:
     """Return [{'id': 0, 'name': 'Layer name'}, ...] for a MapServer/FeatureServer."""
     url = service_url.rstrip("/") + "?f=pjson"
@@ -309,59 +306,16 @@ def open_google_maps(latitude: float, longitude: float) -> None:
 # Default data root; change if needed
 NC_DATA_DIR = Path(r"C:\Users\sfang\Documents\NCdata")
 
-def _read_gdf(path: Path, to_epsg: int = 4326):
-    """Read a shapefile to GeoDataFrame, reproject to EPSG, warn if missing."""
-    if not path.exists():
-        warnings.warn(f"[shinyL] Missing file: {path}")
-        return None
-    gdf = gpd.read_file(path)
-    if to_epsg is not None:
-        gdf = gdf.to_crs(epsg=to_epsg)
-    return gdf
+# def _read_gdf(path: Path, to_epsg: int = 4326):
+#     """Read a shapefile to GeoDataFrame, reproject to EPSG, warn if missing."""
+#     if not path.exists():
+#         warnings.warn(f"[shinyL] Missing file: {path}")
+#         return None
+#     gdf = gpd.read_file(path)
+#     if to_epsg is not None:
+#         gdf = gdf.to_crs(epsg=to_epsg)
+#     return gdf
 
-def load_nc_layers(
-    data_dir: Path | str = NC_DATA_DIR, to_epsg: int = 4326
-) -> dict:
-    """
-    Loads common NC GIS layers and returns a dict of GeoDataFrames (all in EPSG:to_epsg).
-    Keys: counties, streams, bridges, surface_water, roads, culverts, huc12
-    """
-    data_dir = Path(data_dir)
-
-    layers = {
-        "counties": _read_gdf(
-            data_dir / "ncgs_state_county_boundary" / "NC_State_County_Boundary1.shp",
-            to_epsg,
-        ),
-        "streams": _read_gdf(
-            data_dir
-            / "North_Carolina_Stream_Centerlines_Effective"
-            / "North_Carolina_Stream_Centerlines_Effective.shp",
-            to_epsg,
-        ),
-        "bridges": _read_gdf(
-            data_dir / "Bridge_Structures" / "Bridge_Structures.shp", to_epsg
-        ),
-        "surface_water": _read_gdf(
-            data_dir
-            / "SurfaceWaterClassifications"
-            / "SurfaceWaterClassifications_prj.shp",
-            to_epsg,
-        ),
-        "roads": _read_gdf(
-            data_dir
-            / "State_Maintained_Roads"
-            / "State_Maintained_Roads_prj.shp",
-            to_epsg,
-        ),
-        "culverts": _read_gdf(
-            data_dir / "Culverts" / "Culverts.shp", to_epsg
-        ),
-        "huc12": _read_gdf(
-            data_dir / "hydrologic_units" / "wbdhu12_a_nc.shp", to_epsg
-        ),
-    }
-    return layers
 
 # ---- Helpers: nearest feature safely (avoid geographic-distance warning) ----
 def nearest_feature(
@@ -443,19 +397,8 @@ Placeholder43 = "Date"
 Placeholder44 = "Elevation"  # (ft)
 
 # shinyL.py (append this)
-import geopandas as gpd
-# nc_counties = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\ncgs_state_county_boundary\NC_State_County_Boundary1.shp").to_crs(epsg=4326)
 nc_counties = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_CountyBdy_Poly/MapServer/0')
-# nc_streams = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\North_Carolina_Stream_Centerlines_Effective\North_Carolina_Stream_Centerlines_Effective.shp").to_crs(epsg=4326)
-# nc_streams = arcgis_read_layer_url('https://spartagis.ncem.org/arcgis/rest/services/Public/FRIS_FloodZones/MapServer/0')
 nc_streams = arcgis_read_layer_url('https://services2.arcgis.com/kCu40SDxsCGcuUWO/arcgis/rest/services/SurfaceWaterClassifications/FeatureServer/0')
-# nc_bridges = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Bridge_Structures\Bridge_Structures.shp").to_crs(epsg=4326)
-# SurfaceWaterClassifications_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp").to_crs(epsg=4326)
-# nc_roads = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\State_Maintained_Roads\State_Maintained_Roads_prj.shp").to_crs(epsg=4326)
-# nc_culverts = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\Culverts\Culverts.shp").to_crs(epsg=4326)
-huc12_data = gpd.read_file(r"C:\Users\sfang\Documents\NCdata\hydrologic_units\wbdhu12_a_nc.shp").to_crs(epsg=4326)
-# SurfaceWaterClassifications_data = gpd.read_file(r'C:\Users\sfang\Documents\NCdata\SurfaceWaterClassifications\SurfaceWaterClassifications_prj.shp')
-# SurfaceWaterClassifications_data = SurfaceWaterClassifications_data.to_crs(epsg=4326) 
 nc_bridges = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/0')
 nc_pipes = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/1')
 nc_culverts = arcgis_read_layer_url('https://gis11.services.ncdot.gov/arcgis/rest/services/NCDOT_Structures/MapServer/2')
@@ -547,49 +490,205 @@ def describe_point_admin_and_stream(
 
 
 
-def ensure_text_style(doc, name="Arial", font_path=r"C:\Windows\Fonts\arial.ttf"):
-    if name not in doc.styles:  # ezdxf table names are case-insensitive
-        doc.styles.new(name, dxfattribs={"font": font_path})
-    return name
+# def ensure_text_style(doc, name="Arial", font_path=r"C:\Windows\Fonts\arial.ttf"):
+#     if name not in doc.styles:  # ezdxf table names are case-insensitive
+#         doc.styles.new(name, dxfattribs={"font": font_path})
+#     return name
 
-def as_text(x, nd=None, default=""):
-    """Robust to None/float/int/DataFrame scalar."""
-    if x is None:
-        return default
+# def as_text(x, nd=None, default=""):
+#     """Robust to None/float/int/DataFrame scalar."""
+#     if x is None:
+#         return default
+#     try:
+#         # Allow optional numeric formatting
+#         if nd is not None and isinstance(x, (int, float)) and not isinstance(x, bool):
+#             return f"{float(x):.{nd}f}"
+#         return f"{x}"
+#     except Exception:
+#         return default
+
+# def upper_or(x, default=""):
+#     s = as_text(x, default=default)
+#     return s.upper() if s else default
+
+# def qfmt(coef: float, exp: float, DA: float) -> str:
+#     """Format your Q strings exactly like your example."""
+#     return f"{int(coef)} ({DA}){exp:.3f}={round(coef * (DA ** exp), 0):.0f} cfs"
+
+
+
+#     """Build the DXF and save to disk using doc.saveas(); return full path."""
+#     import os, ezdxf
+#     from ezdxf.enums import TextEntityAlignment
+
+#     doc = ezdxf.new("R12", setup=True)
+#     style_name = ensure_text_style(doc, "Arial", r"C:\Windows\Fonts\arial.ttf")
+#     msp = doc.modelspace()
+
+#     V = lambda k, **kw: as_text(ctx.get(k), **kw)
+#     U = lambda k: upper_or(ctx.get(k))
+
+#     # flows
+#     try:
+#         DA = float(ctx.get("DA", 0.0))
+#     except Exception:
+#         DA = 0.0
+#     placeholder79a    = "USGS SIR 2023-5006"
+#     placeholder79Q10  = qfmt(191, 0.810, DA)
+#     placeholder79Q25  = qfmt(275, 0.790, DA)
+#     placeholder79Q50  = qfmt(355, 0.778, DA)
+#     placeholder79Q100 = qfmt(437, 0.766, DA)
+#     placeholder79Q500 = qfmt(646, 0.747, DA)
+
+#     # --- your positions (trimmed here; keep your full list) ---
+#     text_positions = [
+#         ((170.2666794829044, 327.0073871457213), "L"),
+#         (( 78.34252392965071, 234.1736691438797), "FLOW"),
+#         (( 47.26048400564468, 622.6254341508684), V("Placeholder1")),
+#         ((201.45995550527,   621.8792068884723), V("Placeholder2")),
+#         ((346.25,            622.25),            V("bridge_stationtxt")),
+#         ((-35.48340049540275, 602.492259339422), U("Countyname")),
+#         ((135.3440231234563,  602.2331646537131), U("basinnames")),
+#         ((360.5,              601.5),            U("Bridgenum")),
+#         ((560.0,              644.68835),        U("Stream")),
+#         ((782.2742555896256,  645.0538411218076), U("new_basin_character")),
+#         ((798.2499999999999,  625.438354),        U("StreamClassification")),  # #32
+#         ((1123.5,             461.43835),         placeholder79a),
+#         ((1123.5,             445),               placeholder79Q10),
+#         ((1123.5,             426),               placeholder79Q25),
+#         ((1123.5,             405),               placeholder79Q50),
+#         ((1123.5,             386),               placeholder79Q100),
+#         ((1123.5,             366.6),             placeholder79Q500),
+#     ]
+
+#     for (x, y), raw_txt in text_positions:
+#         txt = as_text(raw_txt, default="")
+#         msp.add_text(
+#             txt,
+#             dxfattribs={"height": 5, "style": style_name},
+#         ).set_placement((x, y), align=TextEntityAlignment.LEFT)
+
+#     doc.saveas(out_path)  # <-- write to disk
+#     return out_path
+
+
+
+# dxf_utils.py
+def safe_filename(s: str, default="drawing"):
+    s = (s or default).strip()
+    return re.sub(r"[^\w\-_. ]+", "_", s) or default
+
+def as_text(v, default=""):
     try:
-        # Allow optional numeric formatting
-        if nd is not None and isinstance(x, (int, float)) and not isinstance(x, bool):
-            return f"{float(x):.{nd}f}"
-        return f"{x}"
+        return default if v is None else str(v)
     except Exception:
         return default
 
-def upper_or(x, default=""):
-    s = as_text(x, default=default)
-    return s.upper() if s else default
+def upper_or(v, default=""):
+    return as_text(v, default).upper()
 
-def qfmt(coef: float, exp: float, DA: float) -> str:
-    """Format your Q strings exactly like your example."""
-    return f"{int(coef)} ({DA}){exp:.3f}={round(coef * (DA ** exp), 0):.0f} cfs"
+def qfmt(a, b, da):
+    try:
+        da = float(da)
+    except Exception:
+        da = 0.0
+    return f"{a * (da ** b):,.0f} cfs"
 
 
-def build_and_save_dxf(ctx: dict, out_dir: str, filename: str) -> str:
-    """Build the DXF and save to disk using doc.saveas(); return full path."""
-    import os, ezdxf
-    from ezdxf.enums import TextEntityAlignment
+# def build_dxf_bytes1(ctx: dict) -> bytes:
+#     """Build the DXF in-memory and return raw bytes."""
+#     doc = ezdxf.new("R12", setup=True)
+#     msp = doc.modelspace()
 
-    doc = ezdxf.new("R12", setup=True)
-    style_name = ensure_text_style(doc, "Arial", r"C:\Windows\Fonts\arial.ttf")
+#     def as_text(v, default=""):
+#         try: return default if v is None else str(v)
+#         except Exception: return default
+#     def upper_or(v, default=""):
+#         return as_text(v, default).upper()
+
+#     # your flow helpers (adjust formula as needed)
+#     def qfmt(a, b, da):
+#         try: da = float(da)
+#         except Exception: da = 0.0
+#         return f"{a * (da ** b):,.0f} cfs"
+
+#     DA = ctx.get("DA", 0.0)
+
+#     placeholder79a    = "USGS SIR 2023-5006"
+#     placeholder79Q10  = qfmt(191, 0.810, DA)
+#     placeholder79Q25  = qfmt(275, 0.790, DA)
+#     placeholder79Q50  = qfmt(355, 0.778, DA)
+#     placeholder79Q100 = qfmt(437, 0.766, DA)
+#     placeholder79Q500 = qfmt(646, 0.747, DA)
+
+#     text_positions = [
+#         ((170.27, 327.01), "L"),
+#         ((78.34, 234.17), "FLOW"),
+#         ((47.26, 622.63), as_text(ctx.get("Placeholder1"))),
+#         ((201.46, 621.88), as_text(ctx.get("Placeholder2"))),
+#         ((346.25, 622.25), as_text(ctx.get("bridge_stationtxt"))),
+#         ((-35.48, 602.49), upper_or(ctx.get("Countyname"))),
+#         ((135.34, 602.23), upper_or(ctx.get("basinnames"))),
+#         ((360.5, 601.5),  upper_or(ctx.get("Bridgenum"))),
+#         ((560.0, 644.69), upper_or(ctx.get("Stream"))),
+#         ((782.27, 645.05), upper_or(ctx.get("new_basin_character"))),
+#         ((798.25, 625.44), upper_or(ctx.get("StreamClassification"))),
+#         ((1123.5, 461.44), placeholder79a),
+#         ((1123.5, 445.0),  placeholder79Q10),
+#         ((1123.5, 426.0),  placeholder79Q25),
+#         ((1123.5, 405.0),  placeholder79Q50),
+#         ((1123.5, 386.0),  placeholder79Q100),
+#         ((1123.5, 366.6),  placeholder79Q500),
+#     ]
+#     for (x, y), txt in text_positions:
+#         msp.add_text(str(txt), dxfattribs={"height": 5, "style": "Standard"}).set_placement((x, y))
+
+#     buf = io.BytesIO()
+#     doc.saveas(buf)
+#     return buf.getvalue()
+
+
+
+
+def build_dxf_bytes(ctx: dict) -> bytes:
+    """
+    Build DXF in memory (R2000; $INSUNITS set) and return bytes.
+    Adds all text positions with safe fallbacks when ctx fields are empty.
+    """
+    # --- DXF doc
+    doc = ezdxf.new("R2000", setup=True)
+    doc.header["$INSUNITS"] = 2  # 1=in, 2=ft, 4=mm, 6=m, etc.
     msp = doc.modelspace()
 
-    V = lambda k, **kw: as_text(ctx.get(k), **kw)
-    U = lambda k: upper_or(ctx.get(k))
+    # --- helpers
+    def as_text(v, default=""):
+        try:
+            s = default if v is None else str(v)
+        except Exception:
+            s = default
+        # strip to avoid accidental spaces that look like blanks
+        return s.strip()
 
-    # flows
-    try:
-        DA = float(ctx.get("DA", 0.0))
-    except Exception:
-        DA = 0.0
+    def upper_or(v, default=""):
+        return as_text(v, default).upper()
+
+    def qfmt(a, b, da):
+        try:
+            da_val = float(da)
+        except Exception:
+            da_val = 0.0
+        return f"{a * (da_val ** b):,.0f} cfs"
+
+    # --- inputs with sensible fallbacks so you can see text even if ctx is sparse
+    DA  = ctx.get("DA", 0.0)
+    bs  = as_text(ctx.get("bridge_stationtxt"), "STA-10+00")
+    cnty= upper_or(ctx.get("Countyname"), "COUNTY")
+    basin=upper_or(ctx.get("basinnames"), "BASIN")
+    bnum= upper_or(ctx.get("Bridgenum"), "B-####")
+    stream = upper_or(ctx.get("Stream"), "STREAM")
+    basin_char = upper_or(ctx.get("new_basin_character"), "CHAR")
+    sclass = upper_or(ctx.get("StreamClassification"), "CLASS")
+
     placeholder79a    = "USGS SIR 2023-5006"
     placeholder79Q10  = qfmt(191, 0.810, DA)
     placeholder79Q25  = qfmt(275, 0.790, DA)
@@ -597,52 +696,41 @@ def build_and_save_dxf(ctx: dict, out_dir: str, filename: str) -> str:
     placeholder79Q100 = qfmt(437, 0.766, DA)
     placeholder79Q500 = qfmt(646, 0.747, DA)
 
-    # --- your positions (trimmed here; keep your full list) ---
+    # --- ALL text placements (same coords you provided)
     text_positions = [
-        ((170.2666794829044, 327.0073871457213), "L"),
-        (( 78.34252392965071, 234.1736691438797), "FLOW"),
-        (( 47.26048400564468, 622.6254341508684), V("Placeholder1")),
-        ((201.45995550527,   621.8792068884723), V("Placeholder2")),
-        ((346.25,            622.25),            V("bridge_stationtxt")),
-        ((-35.48340049540275, 602.492259339422), U("Countyname")),
-        ((135.3440231234563,  602.2331646537131), U("basinnames")),
-        ((360.5,              601.5),            U("Bridgenum")),
-        ((560.0,              644.68835),        U("Stream")),
-        ((782.2742555896256,  645.0538411218076), U("new_basin_character")),
-        ((798.2499999999999,  625.438354),        U("StreamClassification")),  # #32
-        ((1123.5,             461.43835),         placeholder79a),
-        ((1123.5,             445),               placeholder79Q10),
-        ((1123.5,             426),               placeholder79Q25),
-        ((1123.5,             405),               placeholder79Q50),
-        ((1123.5,             386),               placeholder79Q100),
-        ((1123.5,             366.6),             placeholder79Q500),
+        ((170.27, 327.01), "L"),
+        ((78.34, 234.17), "FLOW"),
+        ((47.26, 622.63), as_text(ctx.get("Placeholder1"), "")),
+        ((201.46, 621.88), as_text(ctx.get("Placeholder2"), "")),
+        ((346.25, 622.25), bs),                 # bridge_stationtxt
+        ((-35.48, 602.49), cnty),               # Countyname
+        ((135.34, 602.23), basin),              # basinnames
+        ((360.5, 601.5),  bnum),                # Bridgenum
+        ((560.0, 644.69), stream),              # Stream
+        ((782.27, 645.05), basin_char),         # new_basin_character
+        ((798.25, 625.44), sclass),             # StreamClassification
+        ((1123.5, 461.44), placeholder79a),
+        ((1123.5, 445.0),  placeholder79Q10),
+        ((1123.5, 426.0),  placeholder79Q25),
+        ((1123.5, 405.0),  placeholder79Q50),
+        ((1123.5, 386.0),  placeholder79Q100),
+        ((1123.5, 366.6),  placeholder79Q500),
     ]
 
-    for (x, y), raw_txt in text_positions:
-        txt = as_text(raw_txt, default="")
-        msp.add_text(
-            txt,
-            dxfattribs={"height": 5, "style": style_name},
-        ).set_placement((x, y), align=TextEntityAlignment.LEFT)
+    # --- write text (style=Standard; height=5)
+    for (x, y), txt in text_positions:
+        # skip truly-empty strings, otherwise add text
+        if as_text(txt, "") != "":
+            msp.add_text(
+                as_text(txt),
+                dxfattribs={"height": 5, "style": "Standard"},
+            ).set_placement((float(x), float(y)))
 
-    os.makedirs(out_dir, exist_ok=True)
-    out_path = os.path.join(out_dir, filename)
-    doc.saveas(out_path)  # <-- write to disk
-    return out_path
-
-
-def safe_filename(name: str, default="drawing"):
-    # simple sanitizer for Windows/macOS
-    import re
-    s = (name or default).strip()
-    s = re.sub(r'[\\/:*?"<>|]+', "_", s)
-    return s or default
-
-
-
-
-
-
-
-
+    # --- in-memory write (StringIO -> bytes)
+    s_buf = io.StringIO()
+    doc.write(s_buf)                         # writes str
+    data = s_buf.getvalue().encode("utf-8") # convert to bytes
+    if not data:
+        raise RuntimeError("DXF buffer is empty (doc.write produced no content)")
+    return data
 
