@@ -1,20 +1,44 @@
-from shiny import App, ui, render
+from shiny import App, Inputs, Outputs, Session, render, ui
 from shinywidgets import output_widget, render_widget
 import ipyleaflet as ipyl
 import streamstats
 import pandas as pd
+from typing import Any
+import io, re, ezdxf
+import os, io, traceback
+import re
+from math import radians, sin, cos, atan2, sqrt
+import streamstats
+import numpy as np
+import geopandas as gpd
+
+import matplotlib.pyplot as plt
+from matplotlib import colors
+from pathlib import Path
+
+
+# USGS tools (pip install dataretrieval; streamstats package may require ArcGIS)
+# import dataretrieval.nwis as nwis
+import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
 import os
+
 from shinyL import (
-    ncft_to_wgs84, wgs84_to_ncft,
+    # ncft_to_wgs84, wgs84_to_ncft,
     find_points_within_radius, open_google_maps, decimal_to_dms,
     make_basin_character, Designername, AsstDesignername, Designdate,
-    load_nc_layers, describe_point_admin_and_stream,
-    ensure_text_style, as_text, upper_or,qfmt, build_and_save_dxf,safe_filename,
+    describe_point_admin_and_stream,
+    # as_text, upper_or,qfmt, build_dxf_bytes,
 )
 
+from arcmap import describe_point_admin_and_stream
+from converting_loc import ncft_to_wgs84, wgs84_to_ncft
+from helper import open_google_maps
+from write_dxf import *
+def safe_filename(s: str, default="drawing"):
+    s = (s or default).strip()
+    return re.sub(r"[^\w\-_. ]+", "_", s) or default
 
 
-DXF_OUT_DIR = r"C:\Users\sfang\Documents\US19W"  # change if you prefer
 
 #ctrl+shift+p to open command palette in VS code
 # ---------- UI ----------
@@ -55,7 +79,7 @@ app_ui = ui.page_fluid(
     ui.h4("Flood Survey data ", style="color:#cc0000;"),
 
     ui.output_ui("basin_character"),
-    ui.output_ui("watershed_map"),   # 👈 plot output
+    # ui.output_ui("watershed_map"),   # 👈 plot output
     ui.output_ui("google_link"),
 
     ui.h3("Nearest Stream Classification"),
@@ -63,8 +87,20 @@ app_ui = ui.page_fluid(
         ui.input_text("Roadname1", "Road Name #1 in CSR", "SR-1385 (Piney Hill Rd) "),
         ui.input_text("Roadname2", "Road Name #2 in CSR", "US-19 West"),
     ),
-    ui.download_button("download_dxf", "Download DXF"),
+    ui.download_button("download_dxf", "Download DXF", class_="btn-primary"),
+
     ui.hr(),
+    # ui.download_button("download1", "Download Example CSV", class_="btn-primary"),
+    ui.h3("DXF Export"),
+    ui.input_text("bridge_station", "Bridge Station", "STA-10+00"),
+    ui.input_numeric("DA", "Drainage Area (mi²)", 1.23),
+    ui.input_text("basinchar", "Basin Character", "A/B"),
+    ui.input_text("bridgenum", "Bridge Number", "B-1234"),
+    ui.input_text("roadname1", "Road Name 1", "US-19W"),
+    ui.input_text("roadname2", "Road Name 2", ""),
+    ui.input_text("designer", "Designer", "Jane Doe"),
+    ui.input_text("asst", "Asst. Designer", "John Roe"),
+    ui.input_date("date", "Design Date"),
     # ui.output_text("stream_class"),
     output_widget("map"),
 )
@@ -147,70 +183,44 @@ def server(input, output, session):
         return new_basin_character
     
 
-    @render.download(
-    filename="csrtex.dxf",
-    media_type="application/dxf",
-    )
-    
+  
+    @render.download(filename=lambda: f"{safe_filename(input.bridge_station())}_csrtex.dxf")
     def download_dxf():
-        # (Reuse your lon/lat + describe_point_admin_and_stream as before)
         lon, lat = ncft_to_wgs84(input.Easting(), input.Northing())
-        try:
-            res = describe_point_admin_and_stream(
-                lon, lat,
-                nc_counties=nc_counties,
-                nc_streams=nc_streams,
-                # surface_water_gdf=SurfaceWaterClassifications_data,
-                # water_class_field="BIMS_Class",
-            )
-        except Exception:
-            res = {}
+        info = describe_point_admin_and_stream(
+            lon, lat)
+        info = describe_point_admin_and_stream(lon, lat)
 
         ctx = {
             "DA": input.DA(),
             "bridge_stationtxt": input.bridge_station(),
-            "Countyname": res.get("county_name"),
-            "basinnames": input.basinchar(),
-            "Bridgenum": input.bridgenum(),
+            "Countyname": info.get("county_name"),
+            # "basinnames": input.basinchar(),
+            # "Bridgenum": input.bridgenum(),
             "route_name": "",
-            "roadname1": input.roadname1(),
-            "roadname2": input.roadname2(),
-            "lat_overall": lat,
-            "lon_overall": lon,
-            "yy": "", "xx": "", "zz": "",
-            "Designername": input.designer(),
-            "AsstDesignername": input.asst(),
-            "Designdate": input.date(),
-            "area_sq_mi": input.areasqmi(),
-            "area_acres": input.areaac(),
-            "Stream": res.get("stream_name"),
-            "new_basin_character": input.basinchar(),
-            "StreamClassification": res.get("stream_class"),
+            "roadname1": input.Roadname1(),
+            "roadname2": input.Roadname2(),
+            # "lat_overall": lat,
+            # "lon_overall": lon,
+            # "Designername": input.designer(),
+            # "AsstDesignername": input.asst(),
+            # "Designdate": str(input.date()) if input.date() else "",
+            "area_sq_mi": None,
+            "area_acres": None,
+            # "Stream": res.get("stream_name"),
+            # "new_basin_character": input.basinchar(),
+            # "StreamClassification": res.get("stream_class"),
             "Placeholder1": "",
             "Placeholder2": "",
-            "Placeholder9": "",
-            "Placeholder10": "",
-            "Placeholder11": "",
         }
 
-        fname_on_disk = f"{safe_filename(input.bridge_station())}_csrtex.dxf"
-        try:
-            out_path = build_and_save_dxf(ctx, DXF_OUT_DIR, fname_on_disk)  # uses doc.saveas()
-            if not (out_path and os.path.isfile(out_path) and os.path.getsize(out_path) > 0):
-                raise RuntimeError(f"DXF not found or empty: {out_path}")
+        data = build_dxf_bytes(ctx)
 
-            # Stream the saved file to the browser
-            with open(out_path, "rb") as f:
-                while True:
-                    chunk = f.read(1024 * 1024)
-                    if not chunk:
-                        break
-                    yield chunk
-        except Exception as e:
-            print("DXF download error:", e)
-            print(traceback.format_exc())
-            raise
+        # Return a GENERATOR of bytes (Shiny expects an iterable)
+        def byte_chunks(buf: bytes, size: int = 1024 * 1024):
+            for i in range(0, len(buf), size):
+                yield buf[i:i+size]
 
-
+        return byte_chunks(data)
 
 app = App(app_ui, server)
