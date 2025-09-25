@@ -22,7 +22,7 @@ app_dir = Path(__file__).parent
 import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
 import os
 from arcmap import describe_point_admin_and_stream
-from shinyL import (
+from shiny_extra import (
     # ncft_to_wgs84, wgs84_to_ncft,
     find_points_within_radius, open_google_maps, decimal_to_dms,
     make_basin_character, Designername, AsstDesignername, Designdate,
