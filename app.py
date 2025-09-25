@@ -21,7 +21,7 @@ app_dir = Path(__file__).parent
 # import dataretrieval.nwis as nwis
 import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
 import os
-
+from arcmap import describe_point_admin_and_stream
 from shinyL import (
     # ncft_to_wgs84, wgs84_to_ncft,
     find_points_within_radius, open_google_maps, decimal_to_dms,
@@ -30,7 +30,7 @@ from shinyL import (
     # as_text, upper_or,qfmt, build_dxf_bytes,
 )
 
-from arcmap import describe_point_admin_and_stream
+
 from converting_loc import ncft_to_wgs84, wgs84_to_ncft
 from helper import open_google_maps
 from write_dxf import *
