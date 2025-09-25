@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from pathlib import Path
 
-
+app_dir = Path(__file__).parent
 # USGS tools (pip install dataretrieval; streamstats package may require ArcGIS)
 # import dataretrieval.nwis as nwis
 import streamstats  # may require specific env (ArcGIS/ArcPy often ships its own)
