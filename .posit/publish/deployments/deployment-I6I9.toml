@@ -6,15 +6,16 @@ client_version = '1.22.0'
 created_at = ''
 dismissed_at = ''
 type = 'python-shiny'
-configuration_name = 'csrbsr-9D00'
-id = '01998263-3f72-e649-d3be-cb2a996f257e'
-dashboard_url = 'https://connect.posit.cloud/sfanghdr/content/01998263-3f72-e649-d3be-cb2a996f257e'
-direct_url = 'https://01998263-3f72-e649-d3be-cb2a996f257e.share.connect.posit.cloud'
-logs_url = 'https://connect.posit.cloud/sfanghdr/content/01998263-3f72-e649-d3be-cb2a996f257e/history'
-deployed_at = '2025-09-25T16:13:01-04:00'
+configuration_name = 'csrbsr_test-K3OO'
+id = '01998282-9bbb-ba17-5046-0c3d7442c2c8'
+dashboard_url = 'https://connect.posit.cloud/sfanghdr/content/01998282-9bbb-ba17-5046-0c3d7442c2c8'
+direct_url = 'https://01998282-9bbb-ba17-5046-0c3d7442c2c8.share.connect.posit.cloud'
+logs_url = 'https://connect.posit.cloud/sfanghdr/content/01998282-9bbb-ba17-5046-0c3d7442c2c8/history'
+deployed_at = '2025-09-25T16:14:02-04:00'
+bundle_id = '01998282-9bbe-4645-4d03-7030e38b7da7'
 files = [
-  '.posit/publish/csrbsr-9D00.toml',
-  '.posit/publish/deployments/deployment-NBF7.toml',
+  '.posit/publish/csrbsr_test-K3OO.toml',
+  '.posit/publish/deployments/deployment-I6I9.toml',
   'app.py',
   'requirements.txt'
 ]
@@ -41,8 +42,8 @@ account_name = 'sfanghdr'
 
 [deployment_error]
 code = 'unknown'
-message = 'Error in update content response: unexpected response from the server (404: {"error":"Could not find Content.","error_type":"resource_not_found","error_args":null})'
-operation = ''
+message = 'Runtime error: Unable to start the app due to a runtime error. Please check the logs for more information.'
+operation = 'publish/deployContent'
 
 [configuration]
 product_type = 'connect_cloud'
@@ -53,10 +54,10 @@ validate = true
 files = [
   '/app.py',
   '/requirements.txt',
-  '/.posit/publish/csrbsr-9D00.toml',
-  '/.posit/publish/deployments/deployment-NBF7.toml'
+  '/.posit/publish/csrbsr_test-K3OO.toml',
+  '/.posit/publish/deployments/deployment-I6I9.toml'
 ]
-title = 'csrbsr'
+title = 'csrbsr_test'
 
 [configuration.python]
 version = '3.9'
