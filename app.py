@@ -34,6 +34,7 @@ from shiny_extra import (
 from converting_loc import ncft_to_wgs84, wgs84_to_ncft
 from helper import open_google_maps
 from write_dxf import *
+
 def safe_filename(s: str, default="drawing"):
     s = (s or default).strip()
     return re.sub(r"[^\w\-_. ]+", "_", s) or default

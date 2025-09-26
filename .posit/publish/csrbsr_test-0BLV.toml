@@ -9,16 +9,9 @@ validate = true
 files = [
   '/app.py',
   '/requirements.txt',
-  '/.posit/publish/csrbsr-9D00.toml',
-  '/.posit/publish/deployments/deployment-NBF7.toml',
-  '/shiny_extra.py',
-  '/write_dxf.py',
-  '/renderers.py',
-  '/filling.py',
-  '/converting_loc.py',
-  '/arcmap.py',
-  '/helper.py'
+  '/.posit/publish/csrbsr_test-0BLV.toml',
+  '/.posit/publish/deployments/deployment-6121.toml'
 ]
-title = 'csrbsr'
+title = 'csrbsr_test'
 
 [python]

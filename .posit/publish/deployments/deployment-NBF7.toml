@@ -11,12 +11,19 @@ id = '01998263-3f72-e649-d3be-cb2a996f257e'
 dashboard_url = 'https://connect.posit.cloud/sfanghdr/content/01998263-3f72-e649-d3be-cb2a996f257e'
 direct_url = 'https://01998263-3f72-e649-d3be-cb2a996f257e.share.connect.posit.cloud'
 logs_url = 'https://connect.posit.cloud/sfanghdr/content/01998263-3f72-e649-d3be-cb2a996f257e/history'
-deployed_at = '2025-09-25T16:13:01-04:00'
+deployed_at = '2025-09-26T14:56:50-04:00'
 files = [
   '.posit/publish/csrbsr-9D00.toml',
   '.posit/publish/deployments/deployment-NBF7.toml',
   'app.py',
-  'requirements.txt'
+  'arcmap.py',
+  'converting_loc.py',
+  'filling.py',
+  'helper.py',
+  'renderers.py',
+  'requirements.txt',
+  'shiny_extra.py',
+  'write_dxf.py'
 ]
 requirements = [
   "ipywidgets==7.8.1 # ipyleaflet's popup is broken with >8.0",
@@ -54,7 +61,14 @@ files = [
   '/app.py',
   '/requirements.txt',
   '/.posit/publish/csrbsr-9D00.toml',
-  '/.posit/publish/deployments/deployment-NBF7.toml'
+  '/.posit/publish/deployments/deployment-NBF7.toml',
+  '/shiny_extra.py',
+  '/write_dxf.py',
+  '/renderers.py',
+  '/filling.py',
+  '/converting_loc.py',
+  '/arcmap.py',
+  '/helper.py'
 ]
 title = 'csrbsr'
 

@@ -10,7 +10,15 @@ files = [
   '/app.py',
   '/requirements.txt',
   '/.posit/publish/csrbsr_test-K3OO.toml',
-  '/.posit/publish/deployments/deployment-I6I9.toml'
+  '/.posit/publish/deployments/deployment-I6I9.toml',
+  '/arcmap.py',
+  '/converting_loc.py',
+  '/filling.py',
+  '/helper.py',
+  '/hydrologic_units',
+  '/renderers.py',
+  '/shiny_extra.py',
+  '/write_dxf.py'
 ]
 title = 'csrbsr_test'
 
